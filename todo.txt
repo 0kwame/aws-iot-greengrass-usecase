@@ -1,0 +1,10 @@
+Next Steps for next meeting...:
+Add makefile 
+Automate deployment (streamline....)
+Understand ultimate goal of IoT project....
+
+Include slides***
+
+IoT recipes (usecases... +for starups...())
+
+** How to do interpolations for messaging in Iot (Only see difference....)

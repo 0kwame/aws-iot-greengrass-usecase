@@ -1,0 +1,53 @@
+version: "3"
+
+vars:
+  TF_DIR: .
+  ENV_FILE: terraform.tfvars
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task -l
+
+  init:
+    desc: Initialize Terraform
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform init
+
+  validate:
+    desc: Validate Terraform configuration
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform validate
+
+  plan:
+    desc: Terraform plan
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform plan -var-file="{{.ENV_FILE}}"
+
+  apply:
+    desc: Terraform apply
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform apply -var-file="{{.ENV_FILE}}" -auto-approve
+
+  destroy:
+    desc: Terraform destroy
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform destroy -var-file="{{.ENV_FILE}}" -auto-approve
+
+  output:
+    desc: Show Terraform outputs
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform output
+
+  lint:
+    desc: Format Terraform code
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform fmt -recursive

@@ -76,6 +76,22 @@ resource "aws_key_pair" "default" {
   }
 }
 
+data "template_file" "gg_init_config" {
+  template = file("${path.module}/config/init-config.yaml.tpl")
+
+  vars = {
+    thing_name        = awscc_iot_thing.gg_core.thing_name
+    region            = "eu-central-1"
+    iot_data_endpoint = data.aws_iot_endpoint.data_ats.endpoint_address
+    iot_cred_endpoint = data.aws_iot_endpoint.credentials_provider.endpoint_address
+  }
+}
+
+resource "local_file" "gg_init_config" {
+  content  = data.template_file.gg_init_config.rendered
+  filename = "${path.module}/config/init-config.yaml"
+}
+
 resource "aws_instance" "gg_core" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
@@ -102,6 +118,23 @@ resource "aws_instance" "gg_core" {
     host        = self.public_ip
   }
 
+
+  # Copy the init-config.yaml to the EC2 instance
+  provisioner "file" {
+    source      = local_file.gg_init_config.filename
+    destination = "/tmp/init-config.yaml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /greengrass",
+      "sudo chown ubuntu:ubuntu /greengrass",
+      "sudo mv /tmp/init-config.yaml /greengrass/init-config.yaml",
+      "sudo chown ubuntu:ubuntu /greengrass/init-config.yaml"
+    ]
+  }
+
+
   provisioner "file" {
     content = templatefile("${path.module}/scripts/setup-greengrass.sh", {
       certificate_pem   = aws_iot_certificate.gg_core_cert.certificate_pem
@@ -123,7 +156,6 @@ resource "aws_instance" "gg_core" {
       "echo 'Setup completed with exit code:' $?"
     ]
   }
-
 
   tags = {
     Name = "GreengrassCore"

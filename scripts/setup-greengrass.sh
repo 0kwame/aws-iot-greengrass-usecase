@@ -39,6 +39,7 @@ unzip -o greengrass-nucleus-latest.zip -d GreengrassInstaller
 # Run Greengrass installer
 sudo -E java -Droot="/greengrass/v2" -Dlog.store=FILE \
   -jar ./GreengrassInstaller/lib/Greengrass.jar \
+  --init-config /greengrass/init-config.yaml \
   --aws-region ${region} \
   --thing-name ${thing_name} \
   --thing-policy-name ${thing_policy_name} \
@@ -48,6 +49,4 @@ sudo -E java -Droot="/greengrass/v2" -Dlog.store=FILE \
   --deploy-dev-tools true \
   --provision false \
   --setup-system-service true \
-  --thing-cert-path /greengrass/certs/device.pem.crt \
-  --thing-private-key-path /greengrass/certs/private.pem.key \
-  --root-ca-path /greengrass/certs/AmazonRootCA1.pem
+

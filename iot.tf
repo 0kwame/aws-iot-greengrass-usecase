@@ -1,3 +1,21 @@
+# IoT Data ATS endpoint
+data "aws_iot_endpoint" "data_ats" {
+  endpoint_type = "iot:Data-ATS"
+}
+
+# IoT Credential Provider endpoint
+data "aws_iot_endpoint" "credentials_provider" {
+  endpoint_type = "iot:CredentialProvider"
+}
+
+output "iot_data_endpoint" {
+  value = data.aws_iot_endpoint.data_ats.endpoint_address
+}
+
+output "iot_credentials_provider_endpoint" {
+  value = data.aws_iot_endpoint.credentials_provider.endpoint_address
+}
+
 resource "awscc_iot_thing" "gg_core" {
   thing_name = "gg-core-demo-${random_string.suffix.result}"
   attribute_payload = {

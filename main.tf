@@ -102,20 +102,32 @@ resource "aws_instance" "gg_core" {
     host        = self.public_ip
   }
 
+  # provisioner "file" {
+  #   content = templatefile("${path.module}/scripts/setup-greengrass.sh", {
+  #     # certificate_pem = aws_iot_certificate.gg_core_cert.certificate_pem
+  #     # private_key     = aws_iot_certificate.gg_core_cert.private_key
+  #     # public_key      = aws_iot_certificate.gg_core_cert.public_key
+  #     region = "eu-central-1"
+  #     # thing_name        = awscc_iot_thing.gg_core.thing_name
+  #     # thing_policy_name = aws_iot_policy.gg_core_policy.name
+  #     # tes_role_name     = aws_iam_role.gg_token_exchange_role.name
+  #     # tes_role_alias    = aws_iot_role_alias.gg_token_exchange_alias.alias
+  #   })
+  #   destination = "/tmp/setup-greengrass.sh"
+  # }
+
+  # provisioner "file" {
+  #   source      = "${path.module}/scripts/setup-greengrass.sh"
+  #   destination = "/tmp/setup-greengrass.sh"
+  # }
+
   provisioner "file" {
     content = templatefile("${path.module}/scripts/setup-greengrass.sh", {
-      certificate_pem   = aws_iot_certificate.gg_core_cert.certificate_pem
-      private_key       = aws_iot_certificate.gg_core_cert.private_key
-      public_key        = aws_iot_certificate.gg_core_cert.public_key
-      region            = "eu-central-1"
-      thing_name        = awscc_iot_thing.gg_core.thing_name
-      thing_policy_name = aws_iot_policy.gg_core_policy.name
-      tes_role_name     = aws_iam_role.gg_token_exchange_role.name
-      tes_role_alias    = aws_iot_role_alias.gg_token_exchange_alias.alias
+      tes_role_name  = aws_iam_role.gg_token_exchange_role.name
+      tes_role_alias = aws_iot_role_alias.gg_token_exchange_alias.alias
     })
     destination = "/tmp/setup-greengrass.sh"
   }
-
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/setup-greengrass.sh",

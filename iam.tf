@@ -109,6 +109,41 @@ resource "aws_iam_policy" "gg_s3_policy" {
 #   })
 # }
 
+# resource "aws_iam_role_policy" "gg_e2e_permissions" {
+#   name = "GreengrassBootstrapPermissions-${random_string.suffix.result}"
+#   role = aws_iam_role.gg_instance_role.id
+
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Sid    = "MinimalInstallerPermissions",
+#         Effect = "Allow",
+#         Action = [
+#           "iot:CreateThing",
+#           "iot:CreateThingGroup",
+#           "iot:CreatePolicy",
+#           "iot:AttachThingPrincipal",
+#           "iam:CreateRole",
+#           "iam:AttachRolePolicy",
+#           "iot:DescribeEndpoint",
+#           "greengrass:CreateDeployment"
+#         ],
+#         Resource = "*"
+#       },
+#       {
+#         Sid    = "S3ReadArtifacts",
+#         Effect = "Allow",
+#         Action = ["s3:GetObject", "s3:ListBucket"],
+#         Resource = [
+#           "arn:aws:s3:::greengrass-components-eu-central-1-382828593864",
+#           "arn:aws:s3:::greengrass-components-eu-central-1-382828593864/*"
+#         ]
+#       }
+#     ]
+#   })
+# }
+
 resource "aws_iam_role_policy" "gg_e2e_permissions" {
   name = "GreengrassBootstrapPermissions-${random_string.suffix.result}"
   role = aws_iam_role.gg_instance_role.id
@@ -124,12 +159,41 @@ resource "aws_iam_role_policy" "gg_e2e_permissions" {
           "iot:CreateThingGroup",
           "iot:CreatePolicy",
           "iot:AttachThingPrincipal",
-          "iam:CreateRole",
-          "iam:AttachRolePolicy",
+          "iot:AttachPolicy",
+          "iot:CreateKeysAndCertificate",
           "iot:DescribeEndpoint",
-          "greengrass:CreateDeployment"
+          "iot:DescribeThingGroup",
+          "iot:DescribeThingGroupInfo",
+          "iot:ListThingGroupsForThing",
+          "iot:ListThingPrincipals",
+          "iot:UpdateThingGroupsForThing",
+          "greengrass:CreateDeployment",
+          "greengrass:DescribeComponent",
+          "greengrass:ListComponents",
+          "greengrass:ListCoreDevices",
+          "greengrass:ListDeployments",
+          "greengrass:ListInstalledComponents",
+          "greengrass:ResolveComponentCandidates"
         ],
         Resource = "*"
+      },
+      {
+        Sid    = "IAMPermissionsForProvisioning",
+        Effect = "Allow",
+        Action = [
+          "iam:CreatePolicy",
+          "iam:CreateRole",
+          "iam:AttachRolePolicy",
+          "iam:GetPolicy",
+          "iam:GetRole",
+          "iam:PassRole",
+          "iam:ListAttachedRolePolicies"
+        ],
+        Resource = [
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/GreengrassV2*",
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/GreengrassV2*",
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*TokenExchange*"
+        ]
       },
       {
         Sid    = "S3ReadArtifacts",
@@ -137,11 +201,11 @@ resource "aws_iam_role_policy" "gg_e2e_permissions" {
         Action = ["s3:GetObject", "s3:ListBucket"],
         Resource = [
           "arn:aws:s3:::greengrass-components-eu-central-1-382828593864",
-          "arn:aws:s3:::greengrass-components-eu-central-1-382828593864/*"
+          "arn:aws:s3:::greengrass-components-eu-central-1-382828593864/*",
+          "arn:aws:s3:::aws-greengrass-*",
+          "arn:aws:s3:::aws-greengrass-*/*"
         ]
       }
     ]
   })
 }
-
-

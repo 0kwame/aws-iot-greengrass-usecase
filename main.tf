@@ -140,5 +140,4 @@ resource "aws_instance" "gg_core" {
   tags = {
     Name = "GreengrassCore"
   }
-
 }

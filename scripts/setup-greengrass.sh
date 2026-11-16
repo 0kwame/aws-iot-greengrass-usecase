@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Install prerequisites
 sudo apt update -y
-sudo apt install default-jdk awscli unzip -y
+sudo apt install -y default-jdk awscli unzip python3 python3-pip python3-venv
 
 # Optional user/group
 sudo useradd --system --create-home ggc_user || true
